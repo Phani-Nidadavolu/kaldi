@@ -23,7 +23,6 @@ done
 if [ $# -ne 1 ]; then
   echo "Usage: $0 [--no-feats] [--no-text] [--no-wav] <data-dir>"
   echo "e.g.: $0 data/train"
-  exit 1;
 fi
 
 data=$1
@@ -81,6 +80,7 @@ check_sorted_and_uniq $data/utt2spk
    echo "(fix this by making speaker-ids prefixes of utt-ids)" && exit 1;
 
 check_sorted_and_uniq $data/spk2utt
+#check_sorted_and_uniq $data/age2utt
 
 ! cmp -s <(cat $data/utt2spk | awk '{print $1, $2;}') \
      <(utils/spk2utt_to_utt2spk.pl $data/spk2utt)  && \
@@ -235,7 +235,7 @@ if [ -f $data/cmvn.scp ]; then
   cat $data/cmvn.scp | awk '{print $1}' > $tmpdir/speakers.cmvn
   cat $data/spk2utt | awk '{print $1}' > $tmpdir/speakers
   if ! cmp -s $tmpdir/speakers{,.cmvn}; then
-    echo "$0: Error: in $data, speaker lists extracted from spk2utt and cmvn"
+    echo "$0: Error: in $data, speaker lists extracted from spkutt and cmvn"
     echo "$0: differ, partial diff is:"
     partial_diff $tmpdir/speakers{,.cmvn}
     exit 1;
@@ -252,6 +252,42 @@ if [ -f $data/spk2gender ]; then
     echo "$0: Error: in $data, speaker lists extracted from spk2utt and spk2gender"
     echo "$0: differ, partial diff is:"
     partial_diff $tmpdir/speakers{,.spk2gender}
+    exit 1;
+  fi
+fi
+
+if [ -f $data/spk2age ]; then
+  check_sorted_and_uniq $data/spk2age
+  cat $data/spk2age | awk '{print $1}' > $tmpdir/speakers.spk2age
+  cat $data/spk2utt | awk '{print $1}' > $tmpdir/speakers
+  if ! cmp -s $tmpdir/speakers{,.spk2age}; then
+    echo "$0: Error: in $data, speaker lists extracted from spk2utt and spk2age"
+    echo "$0: differ, partial diff is:"
+    partial_diff $tmpdir/speakers{,.spk2age}
+    exit 1;
+  fi
+fi
+
+if [ -f $data/spk2updrs ]; then
+  check_sorted_and_uniq $data/spk2updrs
+  cat $data/spk2updrs | awk '{print $1}' > $tmpdir/speakers.spk2updrs
+  cat $data/spk2utt | awk '{print $1}' > $tmpdir/speakers
+  if ! cmp -s $tmpdir/speakers{,.spk2updrs}; then
+    echo "$0: Error: in $data, speaker lists extracted from spk2utt and spk2updrs"
+    echo "$0: differ, partial diff is:"
+    partial_diff $tmpdir/speakers{,.spk2updrs}
+    exit 1;
+  fi
+fi
+
+if [ -f $data/spk2diagdur ]; then
+  check_sorted_and_uniq $data/spk2diagdur
+  cat $data/spk2diagdur | awk '{print $1}' > $tmpdir/speakers.spk2diagdur
+  cat $data/spk2utt | awk '{print $1}' > $tmpdir/speakers
+  if ! cmp -s $tmpdir/speakers{,.spk2diagdur}; then
+    echo "$0: Error: in $data, speaker lists extracted from spk2utt and spk2diagdur"
+    echo "$0: differ, partial diff is:"
+    partial_diff $tmpdir/speakers{,.spk2diagdur}
     exit 1;
   fi
 fi
@@ -303,10 +339,23 @@ if [ -f $data/utt2dur ]; then
   if ! cmp -s $tmpdir/utts{,.utt2dur}; then
     echo "$0: Error: in $data, utterance-ids extracted from utt2spk and utt2dur file"
     echo "$0: differ, partial diff is:"
-    partial_diff $tmpdir/utts{,.utt2dur}
+    partial_diff $tmpdir/utts{,.feats}
     exit 1;
   fi
   cat $data/utt2dur | \
+    awk '{ if (NF != 2 || !($2 > 0)) { print "Bad line : " $0; exit(1) }}' || exit 1
+fi
+
+if [ -f $data/utt2age ]; then
+  check_sorted_and_uniq $data/utt2age
+  cat $data/utt2age | awk '{print $1}' > $tmpdir/utts.utt2age
+  if ! cmp -s $tmpdir/utts{,.utt2age}; then
+    echo "$0: Error: in $data, utterance-ids extracted from utt2spk and utt2age file"
+    echo "$0: differ, partial diff is:"
+    partial_diff $tmpdir/utts{,.feats}
+    exit 1;
+  fi
+  cat $data/utt2age | \
     awk '{ if (NF != 2 || !($2 > 0)) { print "Bad line : " $0; exit(1) }}' || exit 1
 fi
 
