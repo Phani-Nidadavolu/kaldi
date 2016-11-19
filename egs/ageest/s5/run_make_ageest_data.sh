@@ -18,10 +18,11 @@ if [ $stage -le 0 ]; then
 fi
 
 if [ $stage -le 1 ]; then
-    echo ============================================================================
-    echo "            EXTRACTING FEATS AND MAKING LABELS                            "
-    echo ============================================================================
     for gen in male female; do
+      echo ============================================================================
+      echo "            EXTRACTING FEATS AND MAKING LABELS FOR $gen                   "
+      echo ============================================================================
+      
       sh local/extract_feats_make_labels.sh $gen || exit 1;
     done 
 fi

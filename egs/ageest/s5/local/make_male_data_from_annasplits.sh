@@ -57,4 +57,4 @@ done > ${srcdir}/${gen}_utt2sph
 awk '{ print $1" sph2pipe -f wav -p -c "$2" "$3" |" }' ${srcdir}/${gen}_utt2sph > ${desdir}/allfolds/wav.scp
 utils/fix_data_dir.sh ${desdir}/allfolds || exit 1;
 utils/validate_data_dir.sh --no-text --no-feats ${desdir}/allfolds || exit 1;
-
+utils/copy_data_dir.sh $desdir/allfolds $desdir/allfolds_pitch || exit 1;

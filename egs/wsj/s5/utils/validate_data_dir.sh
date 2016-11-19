@@ -80,7 +80,7 @@ check_sorted_and_uniq $data/utt2spk
    echo "(fix this by making speaker-ids prefixes of utt-ids)" && exit 1;
 
 check_sorted_and_uniq $data/spk2utt
-#check_sorted_and_uniq $data/age2utt
+check_sorted_and_uniq $data/age2utt
 
 ! cmp -s <(cat $data/utt2spk | awk '{print $1, $2;}') \
      <(utils/spk2utt_to_utt2spk.pl $data/spk2utt)  && \
@@ -346,6 +346,7 @@ if [ -f $data/utt2dur ]; then
     awk '{ if (NF != 2 || !($2 > 0)) { print "Bad line : " $0; exit(1) }}' || exit 1
 fi
 
+false && {
 if [ -f $data/utt2age ]; then
   check_sorted_and_uniq $data/utt2age
   cat $data/utt2age | awk '{print $1}' > $tmpdir/utts.utt2age
@@ -358,6 +359,6 @@ if [ -f $data/utt2age ]; then
   cat $data/utt2age | \
     awk '{ if (NF != 2 || !($2 > 0)) { print "Bad line : " $0; exit(1) }}' || exit 1
 fi
-
+}
 
 echo "$0: Successfully validated data-directory $data"
