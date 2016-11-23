@@ -80,7 +80,6 @@ check_sorted_and_uniq $data/utt2spk
    echo "(fix this by making speaker-ids prefixes of utt-ids)" && exit 1;
 
 check_sorted_and_uniq $data/spk2utt
-check_sorted_and_uniq $data/age2utt
 
 ! cmp -s <(cat $data/utt2spk | awk '{print $1, $2;}') \
      <(utils/spk2utt_to_utt2spk.pl $data/spk2utt)  && \

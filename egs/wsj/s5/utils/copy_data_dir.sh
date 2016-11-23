@@ -21,8 +21,6 @@ spk_prefix=
 utt_prefix=
 spk_suffix=
 utt_suffix=
-age_suffix=
-age_prefix=
 validate_opts=   # should rarely be needed.
 # end configuration section
 
@@ -77,21 +75,19 @@ cat $srcdir/utt2spk | utils/apply_map.pl -f 1 $destdir/utt_map  | \
 
 utils/utt2spk_to_spk2utt.pl <$destdir/utt2spk >$destdir/spk2utt
 
-if [ -f $srcdir/spk2age ]; then
-  cat $srcdir/spk2age | utils/apply_map.pl -f 1 $destdir/spk_map > $destdir/spk2age
-fi
 
-utils/spk2age_to_age2spk.pl <$destdir/spk2age > $destdir/age2spk
 
 if [ -f $srcdir/feats.scp ]; then
   utils/apply_map.pl -f 1 $destdir/utt_map <$srcdir/feats.scp >$destdir/feats.scp
 fi
 
-if [ -f $srcdir/utt2age ]; then
-  utils/apply_map.pl -f 1 $destdir/utt_map <$srcdir/utt2age >$destdir/utt2age
+if [ -f $srcdir/lab_age.scp ]; then
+  utils/apply_map.pl -f 1 $destdir/utt_map <$srcdir/lab_age.scp >$destdir/lab_age.scp
 fi
 
-utils/utt2age_to_age2utt.pl <$destdir/utt2age | sort -u >$destdir/age2utt
+if [ -f $srcdir/lab_age_aftervad.scp ]; then
+  utils/apply_map.pl -f 1 $destdir/utt_map <$srcdir/lab_age_aftervad.scp >$destdir/lab_age_aftervad.scp
+fi
 
 if [ -f $srcdir/segments ]; then
   utils/apply_map.pl -f 1 $destdir/utt_map <$srcdir/segments >$destdir/segments
@@ -127,7 +123,7 @@ rm $destdir/spk_map $destdir/utt_map
 
 echo "$0: copied data from $srcdir to $destdir"
 
-for f in utt2age spk2age age2utt age2spk feats.scp cmvn.scp vad.scp utt2lang utt2uniq utt2dur utt2num_frames text wav.scp reco2file_and_channel stm glm ctm; do
+for f in lab_age.scp lab_age_aftervad.scp feats.scp cmvn.scp vad.scp utt2lang utt2uniq utt2dur utt2num_frames text wav.scp reco2file_and_channel stm glm ctm; do
   if [ -f $destdir/$f ] && [ ! -f $srcdir/$f ]; then
     echo "$0: file $f exists in dest $destdir but not in src $srcdir.  Moving it to"
     echo " ... $destdir/.backup/$f"

@@ -17,6 +17,7 @@ gen=$1
 set -e
 mfccdir=`pwd`/arks/mfcc/${gen}
 mfccpitchdir=`pwd`/arks/mfccpitch/${gen}
+mfccpitchdir_nopostprocess=`pwd`/arks/mfccpitch_nopostprocess/${gen}
 vaddir=`pwd`/arks/vad/${gen}
 ivecdir=`pwd`/arks/ivec/${gen}
 num_components=2048 # Larger than this doesn't make much of a difference.
@@ -46,6 +47,19 @@ if [ ! -f ${chkpt}/.MFCCPitch ]; then
     utils/fix_data_dir.sh data/$gen/allfolds || exit 1;
 
     touch ${chkpt}/.MFCCPitch
+fi
+
+if [ ! -f ${chkpt}/.MFCCPitch_NoPostprocess ]; then
+    # MAKE SRE08 AND SRE10 FEATS
+    utils/copy_data_dir.sh data/${gen}/allfolds data/${gen}/allfolds_pitch_temp || exit 1;
+    steps/make_mfcc_pitch_no_postprocess.sh  --compress false --nj 30 --mfcc-config conf/mfcc.conf \
+      --pitch-config conf/pitch.conf --cmd "$train_cmd" \
+      data/${gen}/allfolds_pitch_temp ${mfccpitchdir_nopostprocess}/log $mfccpitchdir_nopostprocess || exit 1;
+    steps/compute_cmvn_stats.sh data/$gen/allfolds_pitch_temp ${mfccpitchdir_nopostprocess}/log_cmvn $mfccpitchdir_nopostprocess || exit 1;
+    utils/subset_data_dir.sh --utt-list data/$gen/allfolds_pitch_temp/feats.scp data/$gen/allfolds_pitch_temp data/$gen/allfolds_pitch_no_postprocess || exit 1;
+    utils/fix_data_dir.sh data/${gen}/allfolds_pitch_no_postprocess || exit 1;
+
+    touch ${chkpt}/.MFCCPitch_NoPostprocess
 fi
 
 if [ ! -f ${chkpt}/.VAD ]; then

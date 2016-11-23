@@ -105,10 +105,13 @@ fi
 function do_filtering {
   # assumes the utt2spk and spk2utt files already exist.
   [ -f $srcdir/feats.scp ] && utils/filter_scp.pl $destdir/utt2spk <$srcdir/feats.scp >$destdir/feats.scp
+  [ -f $srcdir/feats_aftervad.scp ] && utils/filter_scp.pl $destdir/utt2spk <$srcdir/feats_aftervad.scp >$destdir/feats_aftervad.scp
+  [ -f $srcdir/feats_aftervad_splice.scp ] && utils/filter_scp.pl $destdir/utt2spk <$srcdir/feats_aftervad_splice.scp >$destdir/feats_aftervad_splice.scp
   [ -f $srcdir/feats_ruben_aftervad.scp ] && utils/filter_scp.pl $destdir/utt2spk <$srcdir/feats_ruben_aftervad.scp >$destdir/feats_ruben_aftervad.scp
   [ -f $srcdir/lab_spkcluster.scp ] && utils/filter_scp.pl $destdir/utt2spk <$srcdir/lab_spkcluster.scp >$destdir/lab_spkcluster.scp
   [ -f $srcdir/lab_mode_lang.scp ] && utils/filter_scp.pl $destdir/utt2spk <$srcdir/lab_mode_lang.scp >$destdir/lab_mode_lang.scp
   [ -f $srcdir/lab_age.scp ] && utils/filter_scp.pl $destdir/utt2spk <$srcdir/lab_age.scp | sort -u >$destdir/lab_age.scp
+  [ -f $srcdir/lab_age_aftervad.scp ] && utils/filter_scp.pl $destdir/utt2spk <$srcdir/lab_age_aftervad.scp | sort -u >$destdir/lab_age_aftervad.scp
   [ -f $srcdir/vad.scp ] && utils/filter_scp.pl $destdir/utt2spk <$srcdir/vad.scp >$destdir/vad.scp
   [ -f $srcdir/utt2lang ] && utils/filter_scp.pl $destdir/utt2spk <$srcdir/utt2lang >$destdir/utt2lang
   [ -f $srcdir/utt2dur ] && utils/filter_scp.pl $destdir/utt2spk <$srcdir/utt2dur >$destdir/utt2dur
